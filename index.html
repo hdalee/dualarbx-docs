@@ -1,0 +1,1076 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>DualArbX 使用手冊</title>
+  <style>
+    :root {
+      --ink: #17221d;
+      --muted: #607068;
+      --paper: #f5f7f3;
+      --surface: #ffffff;
+      --line: #dbe2dc;
+      --green: #116149;
+      --green-dark: #0a4937;
+      --green-soft: #e4f2eb;
+      --amber: #9a5d00;
+      --amber-soft: #fff3d9;
+      --red: #9f2d2d;
+      --red-soft: #fff0ed;
+      --blue: #245b8a;
+      --shadow: 0 18px 50px rgba(23, 34, 29, .08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 85% 0, rgba(17, 97, 73, .09), transparent 28rem),
+        var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: var(--green); }
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 3px solid #65b99b;
+      outline-offset: 3px;
+    }
+    code, kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .92em;
+    }
+    code {
+      padding: .12rem .4rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f1f4f1;
+    }
+    kbd {
+      padding: .08rem .35rem;
+      border: 1px solid #bac5bd;
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      background: #fff;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 8px;
+      left: 8px;
+      padding: .6rem 1rem;
+      color: #fff;
+      background: var(--green-dark);
+      border-radius: 8px;
+      transform: translateY(-150%);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 4.5rem max(1.25rem, calc((100vw - 1180px) / 2)) 4rem;
+      color: #fff;
+      background: linear-gradient(125deg, #0a4937 0%, #116149 62%, #248266 100%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      right: -100px;
+      bottom: -250px;
+      border: 70px solid rgba(255, 255, 255, .07);
+      border-radius: 50%;
+    }
+    .eyebrow {
+      margin: 0 0 .7rem;
+      color: #a9e0cc;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2.3rem, 6vw, 4.9rem);
+      line-height: 1.03;
+      letter-spacing: -.045em;
+    }
+    .hero .lead {
+      max-width: 720px;
+      margin: 1.3rem 0 0;
+      color: #dceee7;
+      font-size: clamp(1rem, 2vw, 1.22rem);
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+      margin-top: 1.6rem;
+    }
+    .pill {
+      padding: .36rem .72rem;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      font-size: .86rem;
+    }
+    .print-button {
+      position: absolute;
+      z-index: 2;
+      top: 1.2rem;
+      right: max(1.25rem, calc((100vw - 1180px) / 2));
+      padding: .62rem .9rem;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 10px;
+      background: rgba(255,255,255,.1);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+    }
+    .print-button:hover { background: rgba(255,255,255,.18); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 2.2rem;
+      width: min(1180px, calc(100% - 2.5rem));
+      margin: 2.5rem auto 5rem;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 1.2rem;
+      padding: 1.15rem;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 8px 30px rgba(23,34,29,.05);
+      backdrop-filter: blur(10px);
+    }
+    .toc strong {
+      display: block;
+      margin: 0 0 .65rem .6rem;
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: .42rem .6rem;
+      color: var(--muted);
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: .9rem;
+    }
+    .toc a:hover {
+      color: var(--green-dark);
+      background: var(--green-soft);
+    }
+
+    main { min-width: 0; }
+    section {
+      margin-bottom: 2.1rem;
+      padding: clamp(1.3rem, 4vw, 2.3rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 1.2rem;
+    }
+    section > :first-child { margin-top: 0; }
+    section > :last-child { margin-bottom: 0; }
+    h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.55rem, 4vw, 2.05rem);
+      line-height: 1.25;
+      letter-spacing: -.025em;
+    }
+    h3 {
+      margin: 1.8rem 0 .6rem;
+      font-size: 1.16rem;
+      line-height: 1.35;
+    }
+    p { margin: .65rem 0; }
+    .section-kicker {
+      margin: 0 0 .35rem;
+      color: var(--green);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    .muted { color: var(--muted); }
+
+    .notice {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .85rem;
+      margin: 1rem 0;
+      padding: 1rem 1.1rem;
+      border: 1px solid;
+      border-radius: 13px;
+    }
+    .notice strong { display: block; margin-bottom: .18rem; }
+    .notice p { margin: 0; }
+    .notice .icon { font-size: 1.25rem; line-height: 1.5; }
+    .notice.danger { border-color: #f1beb5; background: var(--red-soft); }
+    .notice.warning { border-color: #efd49d; background: var(--amber-soft); }
+    .notice.info { border-color: #b8d7c8; background: var(--green-soft); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+      margin: 1.2rem 0 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps li {
+      position: relative;
+      min-height: 108px;
+      padding: 1rem 1rem 1rem 3.6rem;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcfa;
+      counter-increment: step;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      display: grid;
+      width: 1.9rem;
+      height: 1.9rem;
+      color: #fff;
+      background: var(--green);
+      border-radius: 50%;
+      place-items: center;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+    .steps strong { display: block; margin-bottom: .25rem; }
+    .steps p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .check-list, .plain-list { padding-left: 1.25rem; }
+    .check-list li, .plain-list li { margin: .42rem 0; }
+    .check-list { list-style: none; padding: 0; }
+    .check-list li {
+      position: relative;
+      padding-left: 1.7rem;
+    }
+    .check-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .code-block {
+      overflow-x: auto;
+      margin: .9rem 0;
+      padding: .9rem 1rem;
+      color: #eaf6f0;
+      border-radius: 12px;
+      background: #10251e;
+      white-space: pre;
+      font: .88rem/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .92rem;
+    }
+    caption {
+      padding: .75rem 1rem;
+      color: var(--muted);
+      background: #f8faf7;
+      text-align: left;
+      font-weight: 700;
+    }
+    th, td {
+      padding: .78rem .85rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    tr:last-child th, tr:last-child td { border-bottom: 0; }
+    thead th {
+      color: var(--green-dark);
+      background: var(--green-soft);
+      white-space: nowrap;
+    }
+    tbody th { width: 22%; }
+
+    .app-window {
+      overflow: hidden;
+      margin: 1.3rem 0;
+      border: 1px solid #aeb9b1;
+      border-radius: 14px;
+      background: #edf0ed;
+      box-shadow: 0 20px 45px rgba(15, 40, 30, .15);
+      font: .74rem/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .window-title {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .5rem .7rem;
+      color: #38453e;
+      background: #dfe4e0;
+      border-bottom: 1px solid #bdc7bf;
+    }
+    .window-dot { width: .66rem; height: .66rem; border-radius: 50%; background: #b9c2bb; }
+    .window-title strong { margin-left: .35rem; }
+    .swing-menu {
+      display: flex;
+      gap: 1rem;
+      padding: .35rem .7rem;
+      background: #f7f8f6;
+      border-bottom: 1px solid #cbd2cc;
+    }
+    .swing-menu .clock { margin-left: auto; font-family: ui-monospace, monospace; }
+    .swing-body { padding: .5rem; }
+    .swing-panel {
+      position: relative;
+      margin: .42rem 0;
+      padding: .8rem .55rem .55rem;
+      border: 1px solid #9ca9a0;
+      border-radius: 4px;
+      background: #f4f5f3;
+    }
+    .swing-legend {
+      position: absolute;
+      top: -.62rem;
+      left: .55rem;
+      padding: 0 .25rem;
+      background: #f4f5f3;
+      font-weight: 700;
+    }
+    .swing-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      align-items: center;
+      margin: .3rem 0;
+    }
+    .swing-row.split > * { flex: 1; min-width: 160px; }
+    .swing-field, .swing-button, .swing-select {
+      min-height: 1.45rem;
+      padding: .18rem .42rem;
+      border: 1px solid #9ba69e;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .swing-button { background: #e7e9e6; font-weight: 700; }
+    .swing-button.start { color: #fff; border-color: var(--green); background: var(--green); }
+    .swing-field { min-width: 68px; color: #6d786f; }
+    .swing-label { color: #3f4b44; }
+    .swing-metric { color: var(--blue); font-weight: 700; }
+    .callout-number {
+      display: inline-grid;
+      width: 1.4rem;
+      height: 1.4rem;
+      color: #fff;
+      background: var(--green-dark);
+      border-radius: 50%;
+      place-items: center;
+      font-weight: 800;
+    }
+    .callout-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .7rem;
+      margin: 1rem 0 0;
+    }
+    .callout-grid div {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .6rem;
+      padding: .75rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fafbf9;
+    }
+
+    .strategy-map {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: .7rem;
+      align-items: center;
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fafbf9;
+      text-align: center;
+    }
+    .strategy-map .exchange {
+      padding: .8rem;
+      border: 1px solid #cdd7cf;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .strategy-map .arrow { color: var(--green); font-size: 1.5rem; font-weight: 900; }
+    .long { color: #087044; font-weight: 800; }
+    .short { color: #a03b34; font-weight: 800; }
+
+    .button-key {
+      display: inline-block;
+      min-width: 4.3rem;
+      padding: .15rem .45rem;
+      border: 1px solid #aeb8b0;
+      border-radius: 5px;
+      background: #f2f4f1;
+      text-align: center;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .button-key.green { color: #fff; border-color: var(--green); background: var(--green); }
+    .button-key.red { color: #fff; border-color: var(--red); background: var(--red); }
+
+    details {
+      margin: .75rem 0;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fbfcfa;
+    }
+    summary {
+      padding: .8rem 1rem;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    details > div { padding: 0 1rem 1rem; }
+
+    .release {
+      margin-top: 1.2rem;
+      padding: 1rem 1.2rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .release header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: .4rem .8rem;
+    }
+    .release h3 { margin: 0; }
+    .release time { color: var(--muted); font-size: .9rem; }
+    .release ul { margin: .6rem 0 0; padding-left: 0; list-style: none; }
+    .release li { margin: .42rem 0; }
+    .tag {
+      display: inline-block;
+      min-width: 2.6rem;
+      margin-right: .45rem;
+      padding: .05rem .45rem;
+      border-radius: 6px;
+      font-size: .78rem;
+      font-weight: 800;
+      text-align: center;
+    }
+    .tag.added { color: var(--green-dark); background: var(--green-soft); }
+    .tag.changed { color: var(--blue); background: #e6eef6; }
+    .tag.fixed { color: var(--amber); background: var(--amber-soft); }
+
+    .footer-note {
+      padding: 1.2rem;
+      color: var(--muted);
+      text-align: center;
+      font-size: .86rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .toc strong { grid-column: 1 / -1; }
+    }
+    @media (max-width: 640px) {
+      .hero { padding-top: 5rem; }
+      .layout { width: min(100% - 1rem, 1180px); margin-top: .6rem; }
+      section { border-radius: 14px; }
+      .steps, .callout-grid, .toc { grid-template-columns: 1fr; }
+      .strategy-map { grid-template-columns: 1fr; }
+      .strategy-map .arrow { transform: rotate(90deg); }
+      .print-button { right: 1rem; }
+      th, td { padding: .65rem; }
+    }
+
+    @media print {
+      :root { --paper: #fff; --shadow: none; }
+      body { background: #fff; font-size: 10.5pt; }
+      .hero { padding: 1.3cm 1.4cm; background: #fff; color: #111; border-bottom: 3px solid #116149; }
+      .hero .lead, .eyebrow { color: #333; }
+      .pill { border-color: #aaa; }
+      .print-button, .toc, .skip-link { display: none; }
+      .layout { display: block; width: auto; margin: .8cm 1.2cm; }
+      section { margin: 0 0 .7cm; padding: 0; border: 0; box-shadow: none; break-inside: avoid; }
+      section.break-before { break-before: page; }
+      .notice, .steps li, .table-wrap, .app-window, .strategy-map, .release { break-inside: avoid; }
+      a { color: #111; text-decoration: none; }
+      .footer-note { padding: 0; }
+    }
+    @page { size: A4; margin: 1.2cm; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+
+  <header class="hero">
+    <button class="print-button" type="button" onclick="window.print()" aria-label="列印或另存 PDF">列印／存成 PDF</button>
+    <p class="eyebrow">DualArbX · User Guide</p>
+    <h1>使用手冊</h1>
+    <p class="lead">從 API 設定、行情連線到雙站點自動下單，一份按實際畫面順序編排的操作指南。</p>
+    <div class="hero-meta" aria-label="文件資訊">
+      <span class="pill">適用版本 2.5.x</span>
+      <span class="pill">免建置、解壓即用</span>
+      <span class="pill">更新：2026-08-14</span>
+      <span class="pill">繁體中文</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="章節目錄">
+      <strong>目錄</strong>
+      <a href="#safety">使用前必讀</a>
+      <a href="#quick-start">快速開始</a>
+      <a href="#install">啟動與初始設定</a>
+      <a href="#interface">主畫面導覽</a>
+      <a href="#design">系統運作方式</a>
+      <a href="#exchange">選擇交易所</a>
+      <a href="#market">連接行情</a>
+      <a href="#strategy">策略方向</a>
+      <a href="#parameters">參數說明</a>
+      <a href="#trading">開始與停止下單</a>
+      <a href="#schedule">預定時間</a>
+      <a href="#tools">查詢與監控</a>
+      <a href="#troubleshooting">問題排除</a>
+      <a href="#shutdown">安全結束</a>
+      <a href="#releases">版本更新說明</a>
+    </nav>
+
+    <main id="main">
+      <section id="safety">
+        <p class="section-kicker">Read first</p>
+        <h2>使用前必讀</h2>
+        <div class="notice danger">
+          <span class="icon" aria-hidden="true">!</span>
+          <div>
+            <strong>策略面板的「▶ 開始」會送出真實訂單。</strong>
+            <p>先以最小數量測試，確認交易方向、交易對、倍率、槓桿模式與兩邊實際成交量。任何單邊成交都會形成未對沖曝險。</p>
+          </div>
+        </div>
+        <div class="notice danger">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>重要風險提示</strong>
+            <p>使用 API 下單可能因網路問題、交易所系統故障、行情劇烈波動或未知程式錯誤而產生損失。本系統無法保證在所有情況下正常運行；使用者應自行評估風險，並對交易決策與結果負責。使用前請確實了解加密貨幣交易風險，並依自身風險承受能力操作。</p>
+          </div>
+        </div>
+        <div class="notice danger">
+          <span class="icon" aria-hidden="true">!</span>
+          <div>
+            <strong>OKX 極端行情可能延遲成交，且 API 不一定回傳失敗。</strong>
+            <p>「沒有錯誤」不代表訂單已立即成交。遇到劇烈波動、兩邊倉位不一致或價格停止更新時，請立即手動停止策略，直接到 OKX 查詢原訂單狀態、未成交委託、成交紀錄與倉位；在確認原訂單不會繼續成交前，不要補單或重新啟動策略，以免原訂單延遲成交後形成重複部位。</p>
+          </div>
+        </div>
+        <ul class="check-list">
+          <li>API Key 只開啟查詢與交易權限；除非另有必要，請勿開啟提幣權限。</li>
+          <li>若交易所支援 IP 白名單，請限制為執行 DualArbX 的固定 IP。</li>
+          <li>先在交易所端確認保證金模式、槓桿、最小下單量與可用餘額。</li>
+          <li>自動下單期間保持程式、網路與電腦持續運作，不要讓電腦休眠。</li>
+          <li>下單失敗或逾時時，立即到兩個交易所核對實際成交與倉位。</li>
+        </ul>
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>兩種「開始」用途不同。</strong>
+            <p><b>交易對資訊 → 開始</b>只建立行情連線；<b>策略 → ▶ 開始</b>才會啟用自動下單。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="quick-start">
+        <p class="section-kicker">7 steps</p>
+        <h2>快速開始</h2>
+        <ol class="steps">
+          <li><strong>設定授權與憑證</strong><p>開啟「功能 → 系統設定」，從介面填入授權序號與交易所 API 後儲存。</p></li>
+          <li><strong>選擇交易所</strong><p>在交易所 1、2 下拉選單選擇合約或現貨，並檢查畫面顯示的 API 名稱。</p></li>
+          <li><strong>設定下單模式</strong><p>按各交易所旁的 ⚙，確認「槓桿下單」與「減倉 Only」。</p></li>
+          <li><strong>輸入標的</strong><p>填寫交易對 1、2 與加乘比例；一般相同商品的倍率維持 1。</p></li>
+          <li><strong>連接行情</strong><p>按交易對資訊區的「開始」，等待兩個交易所均顯示連接成功。</p></li>
+          <li><strong>核對資訊</strong><p>確認價格持續更新，並用「倉位」查看兩邊現有部位與方向。</p></li>
+          <li><strong>啟動策略</strong><p>填妥策略參數，按「▶ 開始」，再次核對確認視窗後才同意下單。</p></li>
+        </ol>
+      </section>
+
+      <section id="install">
+        <p class="section-kicker">Setup</p>
+        <h2>啟動與初始設定</h2>
+
+        <h3>下載對應的發行包</h3>
+        <p>使用者直接下載 <code>dist</code> 內符合電腦平台的壓縮檔即可，不需要安裝 Maven、Java 或自行建置。請完整解壓縮，不要只取出啟動腳本。</p>
+        <div class="table-wrap">
+          <table>
+            <caption>依作業系統啟動</caption>
+            <thead><tr><th scope="col">平台</th><th scope="col">下載檔案</th><th scope="col">啟動腳本</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">macOS Apple Silicon</th><td><code>MacArm.zip</code></td><td>Terminal 執行 <code>./launcher</code></td></tr>
+              <tr><th scope="row">macOS Intel</th><td><code>MacX64.zip</code></td><td>Terminal 執行 <code>./launcher</code></td></tr>
+              <tr><th scope="row">Windows x64</th><td><code>WinX64.zip</code></td><td>執行 <code>launcher.bat</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>macOS：排除安全性警告並啟動</h3>
+        <p>macOS 會對從網路下載的壓縮檔加上隔離標記。確認檔案來自可信任的發行來源後，在 Terminal 進入解壓縮後的資料夾，執行：</p>
+        <div class="code-block" role="region" aria-label="macOS 排除隔離警告並啟動的指令">cd "/解壓縮後的/DualArbX資料夾"
+xattr -dr com.apple.quarantine .
+chmod +x launcher
+./launcher</div>
+        <p class="muted">程式執行期間請保留 Terminal 視窗。日後再次啟動時，只要進入相同資料夾執行 <code>./launcher</code>，不必重複排除隔離標記。</p>
+
+        <h3>Windows：直接啟動</h3>
+        <p>完整解壓縮 <code>WinX64.zip</code> 後，執行資料夾內的 <code>launcher.bat</code>。不要把批次檔單獨移出，否則會找不到內附的 JRE 與 <code>CPTools.jar</code>。</p>
+
+        <h3>第一次設定授權與 API</h3>
+        <ol class="plain-list">
+          <li>啟動程式後，開啟 <b>功能 → 系統設定</b>。</li>
+          <li>在「系統」頁填入授權序號，並視需要切換深色主題。</li>
+          <li>切到交易所分頁，填入 <b>name</b>（畫面辨識名稱）、<b>apiKey</b>、<b>secretKey</b>，以及該交易所要求的 <b>password / passphrase</b>。</li>
+          <li>Hyper、Aster 等特殊帳號依欄位提示填入錢包位址、私鑰或簽章模式。</li>
+          <li>按「儲存」。已連線的交易所需重新啟動後才會套用新設定。</li>
+        </ol>
+        <div class="notice info">
+          <span class="icon" aria-hidden="true">i</span>
+          <div>
+            <strong>請從設定介面管理憑證</strong>
+            <p>系統會把設定保存到本機。日常新增或修改授權與 API 時，請使用「功能 → 系統設定」，不需要手動編輯設定檔。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="interface" class="break-before">
+        <p class="section-kicker">Interface</p>
+        <h2>主畫面導覽</h2>
+        <p class="muted">下圖為依程式畫面結構重製的示意，不是即時行情截圖。</p>
+
+        <div class="app-window" aria-label="DualArbX 主畫面示意圖">
+          <div class="window-title"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span><strong>DualArbX</strong></div>
+          <div class="swing-menu"><span>檔案</span><span>功能</span><span>幫助</span><span class="clock">14:26:08</span></div>
+          <div class="swing-body">
+            <div class="swing-panel">
+              <span class="swing-legend"><span class="callout-number">1</span> 選擇交易所</span>
+              <div class="swing-row split">
+                <div class="swing-row"><span>1：</span><span class="swing-select">幣安合約 ▾</span><span class="swing-button">⚙</span></div>
+                <div class="swing-row"><span>2：</span><span class="swing-select">Bybit 合約 ▾</span><span class="swing-button">⚙</span></div>
+              </div>
+              <div class="swing-row split"><span>資費：0.0100%　API 名稱：Main</span><span>資費：0.0050%　API 名稱：Hedge</span></div>
+            </div>
+
+            <div class="swing-panel">
+              <span class="swing-legend"><span class="callout-number">2</span> 交易對資訊</span>
+              <div class="swing-row split">
+                <div>交易對1 <span class="swing-field">BTCUSDT</span>　加乘1 <span class="swing-field">1</span></div>
+                <div>交易對2 <span class="swing-field">BTCUSDT</span>　加乘2 <span class="swing-field">1</span></div>
+              </div>
+              <div class="swing-row split"><span>倉位1：0.01 / 680</span><span>倉位2：-0.01 / 679</span></div>
+              <div class="swing-row"><span class="swing-button start">開始</span><span class="swing-button">資費</span><span class="swing-button">溢價</span><span class="swing-button">價差</span><span class="swing-button">倉位</span><span class="swing-button">📊</span></div>
+            </div>
+
+            <div class="swing-panel">
+              <span class="swing-legend"><span class="callout-number">3</span> 策略1－下單參數</span>
+              <div class="swing-row">下單數量：<span class="swing-field">0.001</span><span class="swing-field">0.001</span>　下單次數：<span class="swing-field">5</span></div>
+              <div class="swing-row">掛單簿最低：<span class="swing-field">0.01</span>　價差閥值：<span class="swing-field">-0.10</span></div>
+              <div class="swing-row">下單間隔(s)：<span class="swing-field">3</span><span class="swing-button">更新</span><span class="swing-button start">▶ 開始</span></div>
+              <div class="swing-row">預定時間：<span class="swing-field">HH:mm:ss</span><span class="swing-select">開始 ▾</span><span class="swing-button">設定</span></div>
+            </div>
+
+            <div class="swing-panel">
+              <span class="swing-legend"><span class="callout-number">4</span> 策略1 行情</span>
+              <div class="swing-row">Binance 賣一價格：68000　數量：0.52</div>
+              <div class="swing-row">Bybit 買一價格：68006　數量：0.47</div>
+              <div class="swing-row swing-metric">策略1 溢價指數：-0.00882%</div>
+              <div class="swing-row">5m AVG:-0.01[-0.03[-0.02|0.01]0.02]</div>
+            </div>
+
+            <div class="swing-panel">
+              <span class="swing-legend"><span class="callout-number">5</span> 策略2 與反向行情</span>
+              <div class="swing-row">欄位結構同策略1；方向相反，可獨立設定與啟停。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout-grid">
+          <div><span class="callout-number">1</span><span><b>交易所區</b><br>選站點、查資費並設定各站點的下單模式。</span></div>
+          <div><span class="callout-number">2</span><span><b>交易對區</b><br>輸入標的、倍率，建立行情連線並查看倉位。</span></div>
+          <div><span class="callout-number">3</span><span><b>策略參數</b><br>設定觸發條件、下單量、次數、間隔與排程。</span></div>
+          <div><span class="callout-number">4</span><span><b>策略行情</b><br>顯示兩站點價格、數量、溢價與統計區間。</span></div>
+          <div><span class="callout-number">5</span><span><b>反向策略</b><br>策略2和策略1方向相反，兩者可同時監控。</span></div>
+          <div><span class="callout-number">6</span><span><b>底部狀態列</b><br>顯示記憶體與執行緒數；Java 會自動回收記憶體。</span></div>
+        </div>
+      </section>
+
+      <section id="design">
+        <p class="section-kicker">How it works</p>
+        <h2>系統運作方式</h2>
+
+        <h3>畫面更新較慢，不代表下單偵測較慢</h3>
+        <p>畫面固定每 500 毫秒批次更新一次，最高約每秒 2 次，以降低繪圖與電腦效能需求。這個限制只套用在畫面顯示。</p>
+        <p>實際策略會在收到任一交易所的掛單簿更新時，立即重新計算價差與深度並檢查下單條件；反應速度仍會受到網路、交易所行情推送與 API 回應時間影響。</p>
+
+        <ol class="steps" aria-label="即時偵測與下單流程">
+          <li><strong>收到掛單簿變動</strong><p>WebSocket 更新任一交易所的最新價格與數量。</p></li>
+          <li><strong>重算價差與深度</strong><p>依策略方向、加乘比例與最多前 5 檔深度重新計算。</p></li>
+          <li><strong>檢查所有條件</strong><p>確認價差、掛單簿最低、下單間隔與次數上限。</p></li>
+          <li><strong>兩邊同時送單</strong><p>符合條件時，並行送出交易所 1 與交易所 2 的訂單。</p></li>
+          <li><strong>核對兩邊結果</strong><p>兩邊成功才累計一次；任一邊失敗或逾時就停止策略並查倉。</p></li>
+        </ol>
+
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>失敗即停止：最多裸奔一單，不會一直累加。</strong>
+            <p>當任一邊 API 明確回傳失敗時，系統會立即停止策略，不再送出後續訂單；若另一邊已成功，最多只會留下當次一單未對沖。收到錯誤後仍須人工核對兩邊訂單與倉位。OKX 未回傳失敗的延遲成交屬於另一種風險，請依前述 OKX 警告處理。</p>
+          </div>
+        </div>
+        <p class="muted">即使下單金額很小，也不建議在無人監控的情況下長時間或過夜執行。</p>
+      </section>
+
+      <section id="exchange">
+        <p class="section-kicker">Exchange</p>
+        <h2>選擇交易所與下單設定</h2>
+        <ol class="plain-list">
+          <li>在「1」選擇第一個交易所，在「2」選擇第二個交易所。</li>
+          <li>確認兩邊不是「請選擇」，且 API 名稱是預期帳號。</li>
+          <li>按各站點右側的 <b>⚙</b> 開啟該站點下單設定。</li>
+        </ol>
+
+        <div class="table-wrap">
+          <table>
+            <caption>⚙ 下單設定</caption>
+            <thead><tr><th scope="col">選項</th><th scope="col">用途</th><th scope="col">使用時機</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">槓桿下單</th><td>要求支援的現貨介面以槓桿／保證金模式下單。</td><td>只有在帳戶、商品與交易所 API 都已正確啟用時勾選。</td></tr>
+              <tr><th scope="row">減倉 Only</th><td>以 Reduce Only 意圖送單，避免訂單增加該方向倉位。</td><td>平倉或縮減部位時使用；若無可減倉位，交易所可能拒單。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>策略執行中不要切換交易所。</strong>
+            <p>如需變更，請先停止所有策略，再選擇交易所並重新建立行情連線。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="market">
+        <p class="section-kicker">Market data</p>
+        <h2>輸入交易對並連接行情</h2>
+
+        <h3>交易對與加乘</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">欄位</th><th scope="col">填寫方式</th><th scope="col">範例</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">交易對1／2</th><td>填各交易所實際使用的商品代碼。若只填基礎幣，程式會自動補上 USDT。</td><td><code>BTC</code> → <code>BTCUSDT</code>；也可直接填 <code>ETHUSDC</code> 或含 <code>PERP</code> 的代碼。</td></tr>
+              <tr><th scope="row">加乘1／2</th><td>價格比較時的比例校正，必須大於 0。同一商品通常都填 1。</td><td>標的有倍數、反向或單位差時，依實際合約關係校正。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>價差計算會先套用加乘：<code>(站點賣價 × 加乘) ÷ (另一站點買價 × 加乘) − 1</code>，最後轉為百分比。</p>
+
+        <h3>建立連線並開始偵測價差</h3>
+        <ol class="plain-list">
+          <li>按交易對資訊區的 <span class="button-key green">開始</span>（舊版畫面稱「開始偵測價差」）。</li>
+          <li>在「連接中」視窗等待兩站點成功；需要時可按「取消連接」。失敗時程式會自動重試。</li>
+          <li>主畫面的買一／賣一價格、數量與溢價指數開始持續更新，即代表行情已就緒。</li>
+        </ol>
+        <div class="notice info">
+          <span class="icon" aria-hidden="true">i</span>
+          <div>
+            <strong>此步驟不會啟動自動下單。</strong>
+            <p>它只設定行情訂閱、資費與倉位更新；真正下單仍需在策略區按「▶ 開始」。</p>
+          </div>
+        </div>
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>修改交易所或交易對後，必須再按一次「開始」。</strong>
+            <p>既有行情連線不會自動切換到新設定；請等待兩個交易所重新連接成功後再啟動策略。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="strategy" class="break-before">
+        <p class="section-kicker">Direction</p>
+        <h2>策略方向</h2>
+        <p>預設為一多一空對沖。請用實際交易對與倉位頁再次核對方向，不要只依策略編號判斷。</p>
+
+        <div class="notice info">
+          <span class="icon" aria-hidden="true">i</span>
+          <div>
+            <strong>紅色外框與 ✓ 是資費方向提示。</strong>
+            <p>系統比較兩邊目前資費，標示較適合的策略方向；此提示不比較資費週期，也不會自動啟動策略，仍需自行判斷結算時間與風險。</p>
+          </div>
+        </div>
+
+        <h3>策略1</h3>
+        <div class="strategy-map" aria-label="策略1：交易所1做多，交易所2做空">
+          <div class="exchange">交易所 1<br><span class="long">做多</span><br><small>參考賣一價</small></div>
+          <div class="arrow" aria-hidden="true">⇄</div>
+          <div class="exchange">交易所 2<br><span class="short">做空</span><br><small>參考買一價</small></div>
+        </div>
+
+        <h3>策略2</h3>
+        <div class="strategy-map" aria-label="策略2：交易所1做空，交易所2做多">
+          <div class="exchange">交易所 1<br><span class="short">做空</span><br><small>參考買一價</small></div>
+          <div class="arrow" aria-hidden="true">⇄</div>
+          <div class="exchange">交易所 2<br><span class="long">做多</span><br><small>參考賣一價</small></div>
+        </div>
+
+        <p><b>策略1與策略2可以同時啟用。</b>兩邊會各自監控觸發條件；同時使用前仍要核對總下單量、資金與合併後的實際曝險。</p>
+
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>反向商品可能採同方向模式。</strong>
+            <p>若系統設定啟用 <code>app.same-direction.enabled</code>，交易所 2 會改為跟隨交易所 1 的方向，用於標的本身已是反向商品的情況。使用前務必向系統管理員確認。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="parameters">
+        <p class="section-kicker">Parameters</p>
+        <h2>策略參數說明</h2>
+        <div class="table-wrap">
+          <table>
+            <caption>策略1、策略2各自保存一組參數</caption>
+            <thead><tr><th scope="col">畫面欄位</th><th scope="col">意義</th><th scope="col">輸入限制／判斷方式</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">下單數量（左格）</th><td>交易所 1 每次下單數量。</td><td>必須大於 0，單位依該交易所商品規格。</td></tr>
+              <tr><th scope="row">下單數量（右格）</th><td>交易所 2 每次下單數量。</td><td>必須大於 0；可與左格不同，用來對齊兩站點合約單位。</td></tr>
+              <tr><th scope="row">下單次數</th><td>此輪策略最多成功下單幾組。</td><td>正整數；達上限後策略停止。</td></tr>
+              <tr><th scope="row">掛單簿最低</th><td>兩邊在符合價差的價位上，至少要有多少可用深度。</td><td>必須大於 0；增強模式最多分析前 5 檔。</td></tr>
+              <tr><th scope="row">價差閥值</th><td>允許進場的價差上限，單位為百分比。</td><td>當前價差 <b>小於或等於</b>此值才符合。例：門檻 −0.10%，當前 −0.15% 符合；−0.05% 不符合。</td></tr>
+              <tr><th scope="row">下單間隔(s)</th><td>兩次下單之間至少等待的秒數。</td><td>必須大於 0，可輸入小數；預設 3 秒。</td></tr>
+              <tr><th scope="row">金額提示</th><td>欄位旁顯示估算單筆／總下單金額。</td><td>依目前價格、數量與次數估算，只供核對，不是保證成交金額。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>數量不是金額。</strong>
+            <p>相同的 <code>0.001</code> 在不同商品或交易所可能代表不同名目價值。請依合約乘數與最小下單規格換算。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="trading">
+        <p class="section-kicker">Live trading</p>
+        <h2>開始、更新與停止下單</h2>
+
+        <h3>啟動策略</h3>
+        <ol class="plain-list">
+          <li>確認行情價格仍持續變動，兩邊倉位與 API 名稱正確。</li>
+          <li>完整填寫該策略的兩個下單數量、次數、掛單簿最低、價差閥值與間隔。</li>
+          <li>按該策略的 <span class="button-key green">▶ 開始</span>。</li>
+          <li>系統會驗證欄位與交易所連線；全部通過後顯示確認視窗。</li>
+          <li>重新閱讀「策略1／2所有參數設置正確」後才按「是」。按鈕變成紅色 <span class="button-key red">■ 停止</span> 即代表策略正在監控下單條件。</li>
+          <li>每次啟動都會把該策略的下單次數重設為 0；停止後再次啟動也會重新計算。</li>
+        </ol>
+
+        <h3>執行中更新</h3>
+        <p>允許修改下單數量、掛單簿最低、價差閥值與下單間隔後按「更新」套用。交易所、交易對、下單次數與加乘在執行中會被鎖定或不應變更。</p>
+
+        <h3>停止策略</h3>
+        <p>按紅色 <span class="button-key red">■ 停止</span> 即停止後續送單。停止不會自動平掉既有倉位，請用「倉位」或交易所網站核對。</p>
+
+        <div class="notice danger">
+          <span class="icon" aria-hidden="true">!</span>
+          <div>
+            <strong>錯誤訊息出現後仍要人工查倉。</strong>
+            <p>單邊明確失敗時，系統會停止策略並觸發查倉，最多留下當次一單未對沖，不會繼續下單累加；交易所回報仍可能延遲，請直接登入兩邊交易所確認訂單與曝險。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="schedule">
+        <p class="section-kicker">Schedule</p>
+        <h2>預定時間</h2>
+        <ol class="plain-list">
+          <li>在策略下方輸入 24 小時制時間，格式必須是 <code>HH:mm:ss</code>，例如 <code>23:59:30</code>。</li>
+          <li>選擇「開始」或「停止」。</li>
+          <li>按「設定」後，狀態會顯示「預定開始@時間」或「預定停止@時間」；按「取消」可撤銷。</li>
+          <li>時間到達且動作完成後，排程會自動清除。</li>
+        </ol>
+        <div class="notice danger">
+          <span class="icon" aria-hidden="true">!</span>
+          <div>
+            <strong>預定「開始」會略過人工確認視窗。</strong>
+            <p>設定前先手動完成行情連線與參數核對。程式必須保持開啟，系統時鐘也必須正確。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="tools">
+        <p class="section-kicker">Monitor</p>
+        <h2>查詢與監控功能</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">位置／按鈕</th><th scope="col">功能</th><th scope="col">閱讀重點</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">資費</th><td>開啟多交易所當前與歷史資金費率視窗。</td><td>交易對若只填基礎幣，會補成 USDT 後查詢。</td></tr>
+              <tr><th scope="row">溢價</th><td>比較目前兩個交易所的溢價指標。</td><td>交易所名稱必須是支援的對照項目。</td></tr>
+              <tr><th scope="row">價差</th><td>開啟兩站點價差視窗。</td><td>用來觀察門檻相對於即時行情是否合理。</td></tr>
+              <tr><th scope="row">倉位</th><td>比較方向、大小、名目金額、平均成本、強平價、標記價、未實現盈虧與槓桿。</td><td>按 <kbd>Esc</kbd> 可關閉；此視窗非模態，可保留在旁監控。</td></tr>
+              <tr><th scope="row">📊</th><td>顯示兩站點掛單簿。</td><td>只有授權支援時可用。</td></tr>
+              <tr><th scope="row">策略行情</th><td>顯示買一／賣一價格與數量、溢價指數。</td><td>策略1看站點1賣一與站點2買一；策略2相反。</td></tr>
+              <tr><th scope="row">5m / 30m / 1d</th><td>顯示價差歷史的平均、最小／最大與內圈區間。</td><td>內圈為平均值 ± 1 個標準差（受最小／最大值限制），不是固定 80%；樣本不足時會標記「樣本少」。</td></tr>
+              <tr><th scope="row">狀態列</th><td>每 5 秒更新記憶體用量與執行緒數。</td><td>記憶體超過 60% 轉橘、超過 80% 轉紅；Java 會自動回收，通常不需要按「清理記憶體」。</td></tr>
+              <tr><th scope="row">功能 → 系統設定</th><td>編輯授權、主題與各交易所 API 設定。</td><td>儲存後，已連線交易所需重新啟動才套用。</td></tr>
+              <tr><th scope="row">功能 → Bybit 自動借幣</th><td>功能開關啟用時才顯示，可設定借幣幣種、抵押品、單次／最高總量、間隔與最高 LTV。</td><td>這會執行真實借貸；開始前核對利率、抵押品與清算風險。</td></tr>
+              <tr><th scope="row">幫助 → 關於</th><td>顯示 DualArbX 版本、構建編號與時間。</td><td>回報問題時請一併提供版本資訊。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>剛連線時的極端價差先不要採用。</strong>
+            <p>一開始可能因掛單簿資料尚未完整而出現極端值。等價格、深度與統計穩定後，再用 5m、30m、1d 區間評估門檻。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="troubleshooting" class="break-before">
+        <p class="section-kicker">Troubleshooting</p>
+        <h2>常見問題排除</h2>
+
+        <details open>
+          <summary>選完交易所後，API 名稱不正確或連線失敗</summary>
+          <div>
+            <ol class="plain-list">
+              <li>到「功能 → 系統設定」確認選到的交易所分頁與 API Key。</li>
+              <li>檢查 API 權限、Passphrase、IP 白名單、系統時間與網路。</li>
+              <li>儲存後停止策略並重啟程式，再重新選擇交易所。</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary>按交易對資訊的「開始」後一直沒有價格</summary>
+          <div>
+            <ol class="plain-list">
+              <li>確認兩個交易對不是空白，且是各交易所實際使用的商品代碼。</li>
+              <li>查看連接視窗中是哪一個交易所失敗；取消後再試一次。</li>
+              <li>若剛切換交易所，請重新按交易對資訊區的「開始」建立連線。</li>
+              <li>確認防火牆、VPN 或公司網路沒有阻擋交易所 WebSocket。</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary>策略「▶ 開始」沒有啟動</summary>
+          <div>
+            <p>依錯誤視窗逐項補齊：兩個下單數量、正整數下單次數、掛單簿最低、價差閥值、正數間隔、交易對與交易所連線。</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>倉位顯示 N/A</summary>
+          <div>
+            <p><code>N/A</code> 可能代表沒有倉位、資料尚未回來、交易對不符或 API 沒有查倉權限。等候下一次更新後仍未恢復，請按「倉位」並直接到交易所核對。</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>一邊成功、一邊失敗或顯示下單逾時</summary>
+          <div>
+            <p>立即停止兩個策略，不要直接重按開始。分別查看兩邊的未成交委託、成交紀錄與倉位，先處理單邊曝險，再檢查餘額、最小數量、Reduce Only、槓桿模式與連線狀態。</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>記憶體顯示紅色</summary>
+          <div>
+            <p>通常不需要操作，Java 會自動清理記憶體。若使用量長時間持續上升且介面明顯變慢，可安全結束程式後重啟，並保留 <code>logs/dualarbx.log</code> 供排查。</p>
+          </div>
+        </details>
+      </section>
+
+      <section id="shutdown">
+        <p class="section-kicker">Finish safely</p>
+        <h2>安全結束程式</h2>
+        <ol class="steps">
+          <li><strong>停止策略1、2</strong><p>所有紅色「■ 停止」都要恢復為「▶ 開始」。</p></li>
+          <li><strong>確認沒有待處理訂單</strong><p>到兩個交易所查看未成交委託、成交紀錄與實際倉位。</p></li>
+          <li><strong>記錄異常</strong><p>若發生拒單、逾時或單邊成交，保留時間、畫面與日誌。</p></li>
+          <li><strong>關閉程式</strong><p>使用「檔案 → 退出」或關閉視窗；程式會停止背景更新任務並結束。</p></li>
+        </ol>
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>關閉 DualArbX 不等於平倉。</strong>
+            <p>程式退出只停止後續自動操作，交易所上的倉位與未成交委託仍由交易所管理。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="releases">
+        <p class="section-kicker">Release notes</p>
+        <h2>版本更新說明</h2>
+        <p class="muted">最新版本在最上方。回報問題時請附上「幫助 → 關於」顯示的版本與構建編號。</p>
+
+        <!-- 新版本複製此區塊，放在最上方：
+        <article class="release">
+          <header><h3>X.Y.Z</h3><time datetime="YYYY-MM-DD">YYYY-MM-DD</time></header>
+          <ul>
+            <li><span class="tag added">新增</span>…</li>
+            <li><span class="tag changed">變更</span>…</li>
+            <li><span class="tag fixed">修正</span>…</li>
+          </ul>
+        </article>
+        -->
+
+        <article class="release">
+          <header><h3>3.0.0</h3><time datetime="2026-09-23">2026-09-23</time></header>
+          <ul>
+            <li><span class="tag changed">變更</span>程式名稱更新為 DualArbX，視窗標題與「關於」一併更新。</li>
+            <li><span class="tag added">新增</span>視窗標題顯示序號授權對象（「— 授權給：…」）。序號為個人專屬，請勿分享。</li>
+            <li><span class="tag changed">變更</span>日誌檔改為 <code>logs/dualarbx.log</code>，回報問題時請附上此檔。</li>
+            <li><span class="tag changed">變更</span>依授權等級不同，「功能」選單中的部分項目（如單交易所自動下單、Bitget 借幣偵測）可能不會顯示。</li>
+          </ul>
+        </article>
+      </section>
+
+      <p class="footer-note">DualArbX 使用手冊 · 依 3.0.x 程式介面與實際操作流程整理</p>
+    </main>
+  </div>
+</body>
+</html>
