@@ -557,6 +557,7 @@
       <a href="#safety">使用前必讀</a>
       <a href="#quick-start">快速開始</a>
       <a href="#install">啟動與初始設定</a>
+      <a href="#settings">功能選單與 API 設定</a>
       <a href="#interface">主畫面導覽</a>
       <a href="#design">系統運作方式</a>
       <a href="#exchange">選擇交易所</a>
@@ -659,8 +660,7 @@ chmod +x launcher
         <ol class="plain-list">
           <li>啟動程式後，開啟 <b>功能 → 系統設定</b>。</li>
           <li>在「系統」頁填入授權序號，並視需要切換深色主題。</li>
-          <li>切到交易所分頁，填入 <b>name</b>（畫面辨識名稱）、<b>apiKey</b>、<b>secretKey</b>，以及該交易所要求的 <b>password / passphrase</b>。</li>
-          <li>Hyper、Aster 等特殊帳號依欄位提示填入錢包位址、私鑰或簽章模式。</li>
+          <li>切到要使用的交易所分頁，依<a href="#api-fields">各交易所 API 欄位</a>填入。</li>
           <li>按「儲存」。已連線的交易所需重新啟動後才會套用新設定。</li>
         </ol>
         <div class="notice info">
@@ -668,6 +668,62 @@ chmod +x launcher
           <div>
             <strong>請從設定介面管理憑證</strong>
             <p>系統會把設定保存到本機。日常新增或修改授權與 API 時，請使用「功能 → 系統設定」，不需要手動編輯設定檔。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings">
+        <p class="section-kicker">Menu &amp; API</p>
+        <h2>功能選單與 API 設定</h2>
+
+        <h3>選單列</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>選單項目</caption>
+            <thead><tr><th scope="col">選單</th><th scope="col">功能</th><th scope="col">說明</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">檔案 → 退出</th><td>結束程式。</td><td>退出前先停止所有策略；退出不會平倉。</td></tr>
+              <tr><th scope="row">功能 → 系統設定</th><td>填入授權序號與各交易所 API。</td><td>儲存後，已連線的交易所需重新啟動才會套用。</td></tr>
+              <tr><th scope="row">功能 → 深色主題</th><td>切換深色／淺色畫面。</td><td>設定會保存，下次啟動沿用。</td></tr>
+              <tr><th scope="row">功能 → 雙交易所價差下單</th><td>預設畫面，本手冊說明的主要功能。</td><td rowspan="2">兩者擇一切換；切換前請先停止執行中的策略。</td></tr>
+              <tr><th scope="row">功能 → 單交易所自動下單</th><td>在單一交易所依設定的數量、次數與間隔分批下單。</td></tr>
+              <tr><th scope="row">功能 → Bitget 借幣偵測</th><td>監控 Bitget 可借額度與借幣利率紀錄。</td><td>會執行真實借貸操作，使用前核對利率與風險。</td></tr>
+              <tr><th scope="row">幫助 → 關於</th><td>顯示版本、構建編號與授權資訊。</td><td>回報問題時請一併提供。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>系統設定畫面</h3>
+        <p>左側每個分頁對應一個交易所，只需要填寫會用到的交易所；不用的分頁保持空白即可。欄位旁會顯示用途提示，滑鼠停在欄位上也會出現說明。</p>
+        <ol class="plain-list">
+          <li><b>系統</b> 分頁：<code>system.sn</code> 貼上完整授權序號（很長，請確認沒有被截斷）。</li>
+          <li>交易所分頁：到交易所網站建立 API Key，將對應值貼到下表欄位。</li>
+          <li>按「儲存」後重新啟動程式。</li>
+        </ol>
+
+        <h3 id="api-fields">各交易所 API 欄位</h3>
+        <p>所有交易所都有 <b>name</b> 欄位，是自訂名稱，只用於畫面顯示（例如「Main」、「Hedge」），方便確認選到的是哪個帳號。</p>
+        <div class="table-wrap">
+          <table>
+            <caption>依交易所分頁填寫</caption>
+            <thead><tr><th scope="col">分頁</th><th scope="col">要填的欄位</th><th scope="col">補充</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">binance、bybit、gate、mexc、back（Backpack）</th><td><b>apiKey</b>、<b>secretKey</b></td><td>交易所建立 API 時顯示的 API Key 與 Secret Key。</td></tr>
+              <tr><th scope="row">okx</th><td><b>apiKey</b>、<b>secretKey</b>、<b>password</b></td><td><b>password</b> 是建立 API 時自訂的 Passphrase，不是登入密碼。</td></tr>
+              <tr><th scope="row">bitget</th><td><b>apiKey</b>、<b>secretKey</b>、<b>password</b></td><td><b>password</b> 為 Passphrase。勾選 <b>spotMargin</b> 時現貨走全倉槓桿，僅統一帳戶支援。</td></tr>
+              <tr><th scope="row">bingx</th><td><b>apiKey</b>、<b>secretKey</b></td><td><b>password</b> 不需填寫，留空即可。勾選 <b>autoCross</b> 時，下單會自動切換為全倉。</td></tr>
+              <tr><th scope="row">kucoin</th><td><b>apiKey</b>、<b>secretKey</b>、<b>password</b></td><td><b>password</b> 為 Passphrase。勾選 <b>autoCross</b> 時，下單會自動切換為全倉。</td></tr>
+              <tr><th scope="row">aster</th><td><b>apiKey</b>、<b>secretKey</b>、<b>user</b></td><td><b>user</b> 填主帳號錢包位址（0x…）。勾選 <b>v3</b> 時，apiKey 改填 signer 位址、secretKey 改填 signer 私鑰。</td></tr>
+              <tr><th scope="row">hyper（Hyperliquid）</th><td><b>secretKey</b>、<b>user</b>，視情況填 <b>apiKey</b></td><td><b>secretKey</b> 填主帳號私鑰或已授權的 agent 錢包私鑰；用 agent 時 <b>apiKey</b> 填 agent 錢包位址，用主帳號私鑰可留空。<b>user</b> 填主帳號錢包位址。<b>vaultAddress</b> 一般留空。勾選 <b>cross</b>＝全倉，不勾＝逐倉。</td></tr>
+              <tr><th scope="row">polymarket</th><td><b>apiKey</b>、<b>secretKey</b>、<b>password</b></td><td>依序填 proxy 錢包位址、proxy 私鑰、proxy secret。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="notice warning">
+          <span class="icon" aria-hidden="true">⚠</span>
+          <div>
+            <strong>API Key、私鑰與序號都不要分享或截圖貼出。</strong>
+            <p>建立 API 時只開啟查詢與交易權限，不要開提幣權限；交易所支援 IP 白名單時請一併設定。在社群提問時，請勿貼出設定畫面或設定檔內容。</p>
           </div>
         </div>
       </section>
@@ -949,7 +1005,7 @@ chmod +x launcher
               <tr><th scope="row">溢價</th><td>比較目前兩個交易所的溢價指標。</td><td>交易所名稱必須是支援的對照項目。</td></tr>
               <tr><th scope="row">價差</th><td>開啟兩站點價差視窗。</td><td>用來觀察門檻相對於即時行情是否合理。</td></tr>
               <tr><th scope="row">倉位</th><td>比較方向、大小、名目金額、平均成本、強平價、標記價、未實現盈虧與槓桿。</td><td>按 <kbd>Esc</kbd> 可關閉；此視窗非模態，可保留在旁監控。</td></tr>
-              <tr><th scope="row">📊</th><td>顯示兩站點掛單簿。</td><td>只有授權支援時可用。</td></tr>
+              <tr><th scope="row">📊</th><td>顯示兩站點掛單簿。</td><td>用來確認兩邊在目標價位的可成交深度。</td></tr>
               <tr><th scope="row">策略行情</th><td>顯示買一／賣一價格與數量、溢價指數。</td><td>策略1看站點1賣一與站點2買一；策略2相反。</td></tr>
               <tr><th scope="row">5m / 30m / 1d</th><td>顯示價差歷史的平均、最小／最大與內圈區間。</td><td>內圈為平均值 ± 1 個標準差（受最小／最大值限制），不是固定 80%；樣本不足時會標記「樣本少」。</td></tr>
               <tr><th scope="row">狀態列</th><td>每 5 秒更新記憶體用量與執行緒數。</td><td>記憶體超過 60% 轉橘、超過 80% 轉紅；Java 會自動回收，通常不需要按「清理記憶體」。</td></tr>
